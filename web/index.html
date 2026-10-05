@@ -1,26 +1,58 @@
-<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>حالة الحي</title>
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>إقامة رياض البحر</title>
 <style>
-:root{--bg:#fff;--fg:#1b1f23;--c:#f3f5f7;--ac:#0a7d5a;--bd:#d5dbe0}
-@media(prefers-color-scheme:dark){:root{--bg:#14181c;--fg:#e8ecef;--c:#1f252b;--ac:#34c58f;--bd:#333c44}}
+:root{--bg:#f1f6f8;--fg:#12313b;--c:#fff;--ac:#0e7490;--ac2:#164e63;--bd:#d3e2e8;--sh:0 4px 16px rgba(14,116,144,.12)}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1a1f;--fg:#e4f0f3;--c:#15272e;--ac:#38bdd8;--ac2:#0e7490;--bd:#27414a;--sh:none}}
+*{box-sizing:border-box}
 body{margin:0;font:16px system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--fg)}
-main{max-width:640px;margin:auto;padding:16px}
-section{background:var(--c);border-radius:12px;padding:14px;margin:12px 0}
-h2{margin:0 0 8px;font-size:1.05rem}
-.row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-.bar{height:10px;background:var(--bd);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
-small{opacity:.7}
+#hd{height:clamp(150px,28vw,280px);display:flex;align-items:flex-end;color:#fff;background:linear-gradient(to top,rgba(0,0,0,.6),transparent 65%),url(header.jpg) center/cover,linear-gradient(135deg,var(--ac),var(--ac2))}
+#hd div{padding:16px 20px;max-width:720px;margin:auto;width:100%}
+h1{margin:0;font-size:clamp(1.4rem,5vw,2rem);text-shadow:0 2px 8px rgba(0,0,0,.4)}
+#hd p{margin:2px 0 0;opacity:.9}
+#tabs{position:sticky;top:0;z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 12px;max-width:720px;margin:auto}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:1px solid var(--bd);border-radius:14px;background:var(--c);color:var(--fg);font:inherit;cursor:pointer;box-shadow:var(--sh);transition:.2s}
+.tab.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;transform:translateY(-2px)}
+.tab span{font-size:.8rem;opacity:.85}.tab b{font-size:1rem}
+.ic{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+main{max-width:720px;margin:auto;padding:4px 12px 16px}
+.card{background:var(--c);border-radius:16px;padding:16px;margin:10px 0;box-shadow:var(--sh);animation:in .3s}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.c{display:flex;gap:16px;align-items:center}
+h2{margin:0 0 6px;font-size:1.05rem}p{margin:4px 0}
+.row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.bar{height:12px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:6px}
+.big{font-size:2rem;font-weight:800;color:var(--ac)}
+.bd{font-size:.8rem;padding:2px 10px;border-radius:99px;background:var(--bd)}.bd.ok{background:#16a34a;color:#fff}
+.ring{width:120px;flex:none}.ring circle{fill:none;stroke-width:10}.ring .bg{stroke:var(--bd)}.ring .fg{stroke:var(--ac);stroke-linecap:round}.ring text{fill:var(--fg);font-size:20px;font-weight:700}
+small{opacity:.7}#up{text-align:center;padding:4px 0 16px}
+#nt{position:sticky;bottom:0;z-index:5}
+.nt{display:flex;gap:10px;align-items:center;padding:12px 16px;background:#fff7e0;color:#5c4400;border-top:2px solid #f5b800}.nt p{margin:0}
+@media(prefers-color-scheme:dark){.nt{background:#3a2f0b;color:#ffe7a1}}
 </style>
-<main><h1>حالة الحي</h1><div id="app">جارٍ التحميل…</div><small id="ts"></small></main>
+<header id="hd"><div><h1>إقامة رياض البحر</h1><p>الوضع المالي للحي</p></div></header>
+<nav id="tabs"></nav><main id="app">جارٍ التحميل…</main><div id="up"></div><div id="nt"></div>
 <script>
-const f=n=>Math.round(n).toLocaleString('fr-FR')+' دج',
-e=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),
+const $=s=>document.querySelector(s),n0=n=>Math.round(n).toLocaleString('fr-FR'),f=n=>n0(n)+' دج',pc=r=>Math.round(r*100)+'%',
+e=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const I={s:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+g:'<path d="M3 7h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4"/><circle cx="17" cy="14" r="1.2"/>',
+p:'<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6M9 10h.01M15 10h.01"/>',
+b:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>'};
+const ic=k=>`<svg class="ic" viewBox="0 0 24 24">${I[k]}</svg>`,
 bar=r=>`<div class="bar"><i style="width:${Math.round(Math.min(r,1)*100)}%"></i></div>`,
-pc=r=>Math.round(r*100)+'%',A=document.getElementById('app');
+ring=r=>`<svg class="ring" viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" stroke-dasharray="${(264*r).toFixed(1)} 264" transform="rotate(-90 50 50)"/><text x="50" y="57" text-anchor="middle">${pc(r)}</text></svg>`;
+const P={
+ s:d=>{const s=d.subscriptions;return `<div class="card c">${ring(s.rate)}<div><h2>اشتراكات ${e(d.month)}</h2><p>المحصَّل <b>${f(s.collected)}</b></p><p>المرجع <b>${f(s.target)}</b></p><p>سدّد <b>${s.paid_members}</b> من <b>${s.active_members}</b> مشترك</p></div></div>`},
+ g:d=>{const g=d.general;return `<div class="card"><h2>الصندوق العام</h2><div class="big">${f(g.balance)}</div><div class="row"><span>الإيرادات ${f(g.income)}</span><span>المصاريف ${f(g.expenses)}</span></div></div>`},
+ p:d=>d.projects.map(p=>`<div class="card"><div class="row"><h2>${e(p.name)}</h2><span class="bd ${p.deficit?'':'ok'}">${p.deficit?pc(p.rate):'مكتمل ✓'}</span></div>${bar(p.rate)}<div class="row"><span>الخزينة ${f(p.collected)}</span><span>التكلفة ${f(p.cost)}</span></div>${p.deficit?`<small>العجز ${f(p.deficit)}</small>`:''}</div>`).join('')};
+const T=[['s','الاشتراكات',d=>pc(d.subscriptions.rate)],['g','الصندوق',d=>n0(d.general.balance)],['p','المشاريع',d=>d.projects.length]];
+let D,cur='s';
+function draw(){
+  $('#tabs').innerHTML=T.map(([k,l,v])=>`<button class="tab ${k===cur?'on':''}" data-k="${k}">${ic(k)}<span>${l}</span><b>${v(D)}</b></button>`).join('');
+  $('#app').innerHTML=P[cur](D)}
+$('#tabs').onclick=ev=>{const b=ev.target.closest('.tab');if(b){cur=b.dataset.k;draw()}};
 fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
-  const s=d.subscriptions,g=d.general;
-  A.innerHTML=`<section><h2>اشتراكات ${e(d.month)}</h2><div class="row"><span>${f(s.collected)}</span><span>المرجع ${f(s.target)}</span></div>${bar(s.rate)}<small>${pc(s.rate)} — دفع ${s.paid_members} من ${s.active_members}</small></section>
-  <section><h2>الصندوق العام</h2><div class="row"><span>الإيرادات ${f(g.income)}</span><span>المصاريف ${f(g.expenses)}</span></div><b>الرصيد ${f(g.balance)}</b></section>`+
-  d.projects.map(p=>`<section><h2>${e(p.name)}</h2><div class="row"><span>الخزينة ${f(p.collected)}</span><span>التكلفة ${f(p.cost)}</span></div>${bar(p.rate)}<small>${pc(p.rate)} — العجز ${f(p.deficit)}</small></section>`).join('');
-  document.getElementById('ts').textContent='آخر تحديث: '+new Date(d.generated_at).toLocaleString('ar-DZ');
-}).catch(()=>A.textContent='تعذّر تحميل البيانات');
+  D=d;draw();
+  $('#up').innerHTML='<small>آخر تحديث: '+new Date(d.generated_at).toLocaleString('ar-DZ')+'</small>';
+  if(d.notice)$('#nt').innerHTML=`<div class="nt">${ic('b')}<p>${e(d.notice)}</p></div>`;
+}).catch(()=>$('#app').textContent='تعذّر تحميل البيانات');
 </script>

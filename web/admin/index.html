@@ -9,22 +9,29 @@ h3{margin:0 0 6px}
 input,select,button{font:inherit;padding:10px;margin:4px 0;width:100%;box-sizing:border-box;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg)}
 button{background:var(--ac);color:#fff;border:0;cursor:pointer}
 table{width:100%;border-collapse:collapse;font-size:14px}td{padding:6px;border-bottom:1px solid var(--bd)}
+#ov{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;padding:24px}
+#ov[hidden]{display:none}#ov b{font-size:1.2rem}
+.sp{display:block;width:44px;height:44px;margin:0 auto 12px;border:5px solid #fff4;border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
 </style>
 <main><h1>لوحة التحكم</h1><p id="msg"></p>
 <section id="lg"><form id="f0"><input name="u" placeholder="اسم المستخدم" autocomplete="username" required><input name="p" type="password" placeholder="كلمة السر" autocomplete="current-password" required><button>دخول</button></form></section>
 <div id="ap" hidden>
 <section id="sm"></section>
 <section><h3>تسجيل دفعة</h3><form id="fp"><select name="m" required></select><select name="j"></select><input name="a" type="number" min="1" placeholder="المبلغ" required><input name="t" type="month" required><button>تسجيل</button></form></section>
-<section><h3>مشترك جديد</h3><form id="fm"><input name="n" placeholder="الاسم" required><input name="p" placeholder="الهاتف"><button>إضافة</button></form></section>
+<section><h3>مشترك جديد</h3><form id="fm"><input name="n" placeholder="الاسم" required><input name="p" placeholder="الهاتف"><input name="h" placeholder="رقم البيت (مثال: A41)" required><button>إضافة</button></form></section>
 <section><h3>مصروف</h3><form id="fx"><input name="i" placeholder="البند" required><input name="a" type="number" min="1" placeholder="المبلغ" required><input name="d" type="date"><button>تسجيل</button></form></section>
+<section><h3>رسالة أسفل الصفحة العامة</h3><form id="fn"><input name="x" maxlength="300" placeholder="نص الرسالة (اتركه فارغاً لإخفائها)"><button>حفظ الرسالة</button></form></section>
 <section><h3>آخر الدفعات</h3><table id="rc"></table></section>
 <button id="out">خروج</button></div></main>
+<div id="ov" hidden><div><i class="sp"></i><b>جارٍ الحفظ…</b><p>لا تضغط مرة أخرى ولا تغلق الصفحة حتى يكتمل الحفظ</p></div></div>
 <script>
-const API='https://script.google.com/macros/s/AKfycbwGVot17tt-whRvuTeVS1iVTuwipz73Udppb0q_9NV-q8p9Vsqa6IhqV3KHx64beR4Hbg/exec';
+const API='PASTE_APPS_SCRIPT_URL';
 const $=s=>document.querySelector(s),e=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),f=n=>Math.round(n).toLocaleString('fr-FR')+' دج';
 const ER={invalid:'بيانات الدخول خاطئة',locked:'محاولات كثيرة — انتظر 15 دقيقة'};
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random();
 let T=sessionStorage.t||'';
-const msg=(t,bad)=>{$('#msg').textContent=ER[t]||t;$('#msg').style.color=bad?'#c0392b':''};
+const msg=(t,bad,ok)=>{$('#msg').textContent=ER[t]||t;$('#msg').style.color=bad?'#c0392b':ok?'#0a7d5a':''};
 async function call(action,p={}){
   const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,token:T,...p})}),j=await r.json();
   if(j.error==='401'){sessionStorage.clear();T='';show();throw new Error('انتهت الجلسة')}
@@ -33,15 +40,19 @@ function show(){$('#lg').hidden=!!T;$('#ap').hidden=!T;if(T)load()}
 async function load(){try{
   const d=await call('lists'),s=d.summary;
   $('#sm').innerHTML=`<b>اشتراك ${e(s.month)}:</b> ${f(s.subscriptions.collected)} / ${f(s.subscriptions.target)} (${Math.round(s.subscriptions.rate*100)}%)<br><b>الصندوق العام:</b> ${f(s.general.balance)}`+s.projects.map(p=>`<br><b>${e(p.name)}:</b> ${f(p.collected)} / ${f(p.cost)}`).join('');
-  $('#fp [name=m]').innerHTML=d.members.map(m=>`<option value="${e(m[0])}">${e(m[1])}</option>`).join('');
+  $('#fp [name=m]').innerHTML=d.members.map(m=>`<option value="${e(m[0])}">${e(m[1])}${m[2]?' — '+e(m[2]):''}</option>`).join('');
   $('#fp [name=j]').innerHTML='<option value="">اشتراك شهري</option>'+d.projects.map(p=>`<option value="${e(p[0])}">${e(p[1])}</option>`).join('');
-  $('#fp [name=t]').value=s.month;
+  $('#fp [name=t]').value=s.month;$('#fn [name=x]').value=s.notice||'';
   $('#rc').innerHTML=d.recent.map(r=>`<tr><td>${e(r[0])}</td><td>${e(r[1])}</td><td>${e(r[2]||'شهري')}</td><td>${f(r[3])}</td></tr>`).join('');
 }catch(x){msg(x.message,1)}}
-const send=(id,action,fn)=>$(id).onsubmit=async ev=>{ev.preventDefault();try{await call(action,fn(new FormData(ev.target)));ev.target.reset();msg('تم الحفظ ✓');load()}catch(x){msg(x.message,1)}};
+const send=(id,action,fn)=>$(id).onsubmit=async ev=>{ev.preventDefault();const F=ev.target;
+  F.dataset.rid=F.dataset.rid||uid();$('#ov').hidden=false;
+  try{await call(action,{...fn(new FormData(F)),rid:F.dataset.rid});delete F.dataset.rid;F.reset();msg('✓ تم الحفظ بنجاح',0,1);await load()}
+  catch(x){msg(x.message,1)}finally{$('#ov').hidden=true}};
 send('#fp','addPayment',d=>({member:d.get('m'),project:d.get('j'),amount:d.get('a'),month:d.get('t')}));
-send('#fm','addMember',d=>({name:d.get('n'),phone:d.get('p')}));
+send('#fm','addMember',d=>({name:d.get('n'),phone:d.get('p'),house:d.get('h')}));
 send('#fx','addExpense',d=>({item:d.get('i'),amount:d.get('a'),date:d.get('d')}));
+send('#fn','setNotice',d=>({text:d.get('x')}));
 $('#f0').onsubmit=async ev=>{ev.preventDefault();const d=new FormData(ev.target);
   try{T=sessionStorage.t=(await call('login',{username:d.get('u'),password:d.get('p')})).token;msg('');ev.target.reset();show()}catch(x){msg(x.message,1)}};
 $('#out').onclick=()=>{sessionStorage.clear();T='';show()};
