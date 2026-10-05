@@ -55,4 +55,5 @@ fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
   $('#up').innerHTML='<small>آخر تحديث: '+new Date(d.generated_at).toLocaleString('ar-DZ')+'</small>';
   if(d.notice)$('#nt').innerHTML=`<div class="nt">${ic('b')}<p>${e(d.notice)}</p></div>`;
 }).catch(()=>$('#app').textContent='تعذّر تحميل البيانات');
-</script>
+</script> 
+   
