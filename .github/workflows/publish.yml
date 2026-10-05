@@ -1,0 +1,28 @@
+name: publish
+on:
+  schedule: [{cron: '7 * * * *'}]   # كل ساعة
+  workflow_dispatch:
+permissions: {contents: write, pages: write, id-token: write}
+concurrency: {group: pages, cancel-in-progress: false}
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: {name: github-pages, url: '${{ steps.d.outputs.page_url }}'}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Fetch + validate data
+        run: |
+          curl -fsSL --retry 3 "${{ vars.API_URL }}?action=public" -o web/data.json
+          jq -e '.schema_version==1 and (.projects|type=="array")' web/data.json >/dev/null
+      - name: Keepalive commit (يوميا)
+        run: |
+          date -u +%F > .last_run
+          if [ -n "$(git status --porcelain .last_run)" ]; then
+            git config user.name github-actions; git config user.email actions@github.com
+            git add .last_run; git commit -m "keepalive $(cat .last_run)"; git push
+          fi
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with: {path: web}
+      - id: d
+        uses: actions/deploy-pages@v5

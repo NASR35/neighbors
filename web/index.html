@@ -1,0 +1,26 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>حالة الحي</title>
+<style>
+:root{--bg:#fff;--fg:#1b1f23;--c:#f3f5f7;--ac:#0a7d5a;--bd:#d5dbe0}
+@media(prefers-color-scheme:dark){:root{--bg:#14181c;--fg:#e8ecef;--c:#1f252b;--ac:#34c58f;--bd:#333c44}}
+body{margin:0;font:16px system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--fg)}
+main{max-width:640px;margin:auto;padding:16px}
+section{background:var(--c);border-radius:12px;padding:14px;margin:12px 0}
+h2{margin:0 0 8px;font-size:1.05rem}
+.row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.bar{height:10px;background:var(--bd);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+small{opacity:.7}
+</style>
+<main><h1>حالة الحي</h1><div id="app">جارٍ التحميل…</div><small id="ts"></small></main>
+<script>
+const f=n=>Math.round(n).toLocaleString('fr-FR')+' دج',
+e=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),
+bar=r=>`<div class="bar"><i style="width:${Math.round(Math.min(r,1)*100)}%"></i></div>`,
+pc=r=>Math.round(r*100)+'%',A=document.getElementById('app');
+fetch('data.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  const s=d.subscriptions,g=d.general;
+  A.innerHTML=`<section><h2>اشتراكات ${e(d.month)}</h2><div class="row"><span>${f(s.collected)}</span><span>المرجع ${f(s.target)}</span></div>${bar(s.rate)}<small>${pc(s.rate)} — دفع ${s.paid_members} من ${s.active_members}</small></section>
+  <section><h2>الصندوق العام</h2><div class="row"><span>الإيرادات ${f(g.income)}</span><span>المصاريف ${f(g.expenses)}</span></div><b>الرصيد ${f(g.balance)}</b></section>`+
+  d.projects.map(p=>`<section><h2>${e(p.name)}</h2><div class="row"><span>الخزينة ${f(p.collected)}</span><span>التكلفة ${f(p.cost)}</span></div>${bar(p.rate)}<small>${pc(p.rate)} — العجز ${f(p.deficit)}</small></section>`).join('');
+  document.getElementById('ts').textContent='آخر تحديث: '+new Date(d.generated_at).toLocaleString('ar-DZ');
+}).catch(()=>A.textContent='تعذّر تحميل البيانات');
+</script>
