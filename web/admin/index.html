@@ -26,7 +26,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}td{padding:6px;border-b
 <button id="out">خروج</button></div></main>
 <div id="ov" hidden><div><i class="sp"></i><b>جارٍ الحفظ…</b><p>لا تضغط مرة أخرى ولا تغلق الصفحة حتى يكتمل الحفظ</p></div></div>
 <script>
-const API='PASTE_APPS_SCRIPT_URL';
+const API='https://script.google.com/macros/s/AKfycbxkXDBSNzjmqA6aSqwYl-go8r_F0p5SHGr9tY18pPMm9HQzW-tVR5IP_sQfWUbe2DQwBA/exec';
 const $=s=>document.querySelector(s),e=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),f=n=>Math.round(n).toLocaleString('fr-FR')+' دج';
 const ER={invalid:'بيانات الدخول خاطئة',locked:'محاولات كثيرة — انتظر 15 دقيقة'};
 const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random();
