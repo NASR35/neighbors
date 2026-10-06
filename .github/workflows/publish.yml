@@ -13,7 +13,7 @@ jobs:
       - name: Fetch + validate data
         run: |
           curl -fsSL --retry 3 "${{ vars.API_URL }}?action=public" -o web/data.json
-         jq -e '.schema_version' web/data.json >/dev/null
+          jq -e '.schema_version==2 and (.projects|type=="array")' web/data.json >/dev/null
       - name: Keepalive commit (يوميا)
         run: |
           date -u +%F > .last_run
