@@ -55,6 +55,5 @@ send('#fx','addExpense',d=>({item:d.get('i'),amount:d.get('a'),date:d.get('d')})
 send('#fn','setNotice',d=>({text:d.get('x')}));
 $('#f0').onsubmit=async ev=>{ev.preventDefault();const d=new FormData(ev.target);
   try{T=sessionStorage.t=(await call('login',{username:d.get('u'),password:d.get('p')})).token;msg('');ev.target.reset();show()}catch(x){msg(x.message,1)}};
-$('#out').onclick=()=>{sessionStorage.clear();T='';show()};
-show();
+$('#out').onclick=()=>{sessionStorage.clear();T='';show()};show();
 </script>
