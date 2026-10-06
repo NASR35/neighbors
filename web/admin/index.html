@@ -2,58 +2,108 @@
 <style>
 :root{--bg:#fff;--fg:#1b1f23;--c:#f3f5f7;--ac:#0a7d5a;--bd:#d5dbe0}
 @media(prefers-color-scheme:dark){:root{--bg:#14181c;--fg:#e8ecef;--c:#1f252b;--ac:#34c58f;--bd:#333c44}}
+*{box-sizing:border-box}
 body{margin:0;font:16px system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--fg)}
-main{max-width:640px;margin:auto;padding:16px}
-section{background:var(--c);border-radius:12px;padding:14px;margin:12px 0}
+main{max-width:720px;margin:auto;padding:12px}
+section{background:var(--c);border-radius:12px;padding:12px;margin:10px 0}
 h3{margin:0 0 6px}
-input,select,button{font:inherit;padding:10px;margin:4px 0;width:100%;box-sizing:border-box;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg)}
-button{background:var(--ac);color:#fff;border:0;cursor:pointer}
-table{width:100%;border-collapse:collapse;font-size:14px}td{padding:6px;border-bottom:1px solid var(--bd)}
-#ov{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;padding:24px}
-#ov[hidden]{display:none}#ov b{font-size:1.2rem}
-.sp{display:block;width:44px;height:44px;margin:0 auto 12px;border:5px solid #fff4;border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}
-@keyframes r{to{transform:rotate(360deg)}}
+input,select,button{font:inherit;padding:10px;margin:4px 0;width:100%;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg)}
+button,.sb{background:var(--ac);color:#fff;border:0;cursor:pointer}
+.sb{width:auto;padding:6px 10px;margin:0 2px;font-size:.85rem;border-radius:8px;text-decoration:none;display:inline-block}
+.tabs{display:flex;gap:6px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:3}
+.tabs button{margin:0;padding:8px 4px;background:var(--c);color:var(--fg);border:1px solid var(--bd);font-size:.9rem}
+.tabs button.on{background:var(--ac);color:#fff}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.k{background:var(--bg);border-radius:10px;padding:10px;font-size:.85rem}.k b{display:block;font-size:1.15rem}
+.it{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:14px}td{padding:6px;border-bottom:1px solid var(--bd)}tr.off{opacity:.45;text-decoration:line-through}
+#md{position:fixed;inset:0;z-index:8;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;padding:12px;overflow:auto}
+#md[hidden],#ov[hidden]{display:none}.box{background:var(--bg);border-radius:14px;padding:14px;width:100%;max-width:520px}
+.gr{background:var(--c);color:var(--fg);border:1px solid var(--bd)}
+#ov{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;padding:24px}#ov b{font-size:1.2rem}
+.sp{display:block;width:44px;height:44px;margin:0 auto 12px;border:5px solid #fff4;border-top-color:#fff;border-radius:50%;animation:r 1s linear infinite}@keyframes r{to{transform:rotate(360deg)}}
 </style>
-<main><h1>لوحة التحكم</h1><p id="msg"></p>
+<main><h2>إقامة رياض البحر — التحكم</h2><p id="msg"></p>
 <section id="lg"><form id="f0"><input name="u" placeholder="اسم المستخدم" autocomplete="username" required><input name="p" type="password" placeholder="كلمة السر" autocomplete="current-password" required><button>دخول</button></form></section>
 <div id="ap" hidden>
-<section id="sm"></section>
-<section><h3>تسجيل دفعة</h3><form id="fp"><select name="m" required></select><select name="j"></select><input name="a" type="number" min="1" placeholder="المبلغ" required><input name="t" type="month" required><button>تسجيل</button></form></section>
-<section><h3>مشترك جديد</h3><form id="fm"><input name="n" placeholder="الاسم" required><input name="p" placeholder="الهاتف"><input name="h" placeholder="رقم البيت (مثال: A41)" required><button>إضافة</button></form></section>
-<section><h3>مصروف</h3><form id="fx"><input name="i" placeholder="البند" required><input name="a" type="number" min="1" placeholder="المبلغ" required><input name="d" type="date"><button>تسجيل</button></form></section>
-<section><h3>رسالة أسفل الصفحة العامة</h3><form id="fn"><input name="x" maxlength="300" placeholder="نص الرسالة (اتركه فارغاً لإخفائها)"><button>حفظ الرسالة</button></form></section>
-<section><h3>آخر الدفعات</h3><table id="rc"></table></section>
-<button id="out">خروج</button></div></main>
+<nav class="tabs"><button data-t="d">اللوحة</button><button data-t="h">البيوت</button><button data-t="t">الاشتراكات</button><button data-t="p">الدفعات</button><button data-t="m">أخرى</button></nav>
+<div id="v"></div><button class="gr" id="out">خروج</button></div></main>
+<div id="md" hidden><div class="box" id="mb"></div></div>
 <div id="ov" hidden><div><i class="sp"></i><b>جارٍ الحفظ…</b><p>لا تضغط مرة أخرى ولا تغلق الصفحة حتى يكتمل الحفظ</p></div></div>
 <script>
-const API='https://script.google.com/macros/s/AKfycbxkXDBSNzjmqA6aSqwYl-go8r_F0p5SHGr9tY18pPMm9HQzW-tVR5IP_sQfWUbe2DQwBA/exec';
-const $=s=>document.querySelector(s),e=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),f=n=>Math.round(n).toLocaleString('fr-FR')+' دج';
-const ER={invalid:'بيانات الدخول خاطئة',locked:'محاولات كثيرة — انتظر 15 دقيقة'};
+let API='PASTE_APPS_SCRIPT_URL';
+if(API.startsWith('PASTE')){API=localStorage.api||prompt('ألصق رابط Apps Script (ينتهي بـ /exec)')||'';localStorage.api=API}
+const $=s=>document.querySelector(s),e=s=>String(s??'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),f=n=>Math.round(n).toLocaleString('fr-FR')+' دج';
+const ER={invalid:'بيانات الدخول خاطئة',locked:'محاولات كثيرة — انتظر 15 دقيقة','bad house':'رقم البيت غير صالح (مثال A32)','house exists':'البيت موجود مسبقاً','already paid':'هذه الأشهر مسجلة مسبقاً','bad amount':'مبلغ غير صالح','bad month':'شهر غير صالح','bad date':'تاريخ غير صالح','bad input':'بيانات ناقصة'};
 const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random();
-let T=sessionStorage.t||'';
+let T=sessionStorage.t||'',tab='d',cur='',HS=[],PS=[];
 const msg=(t,bad,ok)=>{$('#msg').textContent=ER[t]||t;$('#msg').style.color=bad?'#c0392b':ok?'#0a7d5a':''};
 async function call(action,p={}){
-  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,token:T,...p})}),j=await r.json();
+  let r,j;
+  try{r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,token:T,...p})});j=JSON.parse(await r.text())}
+  catch(x){localStorage.removeItem('api');throw new Error('تعذّر الاتصال بالـ API: تحقق من الرابط ومن إعدادات النشر (Anyone) ثم أعد تحميل الصفحة')}
   if(j.error==='401'){sessionStorage.clear();T='';show();throw new Error('انتهت الجلسة')}
   if(!j.ok)throw new Error(j.error);return j.data}
-function show(){$('#lg').hidden=!!T;$('#ap').hidden=!T;if(T)load()}
-async function load(){try{
-  const d=await call('lists'),s=d.summary;
-  $('#sm').innerHTML=`<b>اشتراك ${e(s.month)}:</b> ${f(s.subscriptions.collected)} / ${f(s.subscriptions.target)} (${Math.round(s.subscriptions.rate*100)}%)<br><b>الصندوق العام:</b> ${f(s.general.balance)}`+s.projects.map(p=>`<br><b>${e(p.name)}:</b> ${f(p.collected)} / ${f(p.cost)}`).join('');
-  $('#fp [name=m]').innerHTML=d.members.map(m=>`<option value="${e(m[0])}">${e(m[1])}${m[2]?' — '+e(m[2]):''}</option>`).join('');
-  $('#fp [name=j]').innerHTML='<option value="">اشتراك شهري</option>'+d.projects.map(p=>`<option value="${e(p[0])}">${e(p[1])}</option>`).join('');
-  $('#fp [name=t]').value=s.month;$('#fn [name=x]').value=s.notice||'';
-  $('#rc').innerHTML=d.recent.map(r=>`<tr><td>${e(r[0])}</td><td>${e(r[1])}</td><td>${e(r[2]||'شهري')}</td><td>${f(r[3])}</td></tr>`).join('');
-}catch(x){msg(x.message,1)}}
-const send=(id,action,fn)=>$(id).onsubmit=async ev=>{ev.preventDefault();const F=ev.target;
+const wa=h=>{let p=String(h.phone).replace(/\D/g,'');if(p[0]==='0')p='213'+p.slice(1);
+  return 'https://wa.me/'+p+'?text='+encodeURIComponent(`السلام عليكم ${h.name}، تذكير ودّي: المتبقي على البيت ${h.id} هو ${f(h.debt)}. شكراً لتعاونكم — إقامة رياض البحر`)};
+const M=h=>{$('#mb').innerHTML=h+'<button class="gr" onclick="closeM()">إغلاق</button>';$('#md').hidden=false},closeM=()=>{$('#md').hidden=true};
+function show(){$('#lg').hidden=!!T;$('#ap').hidden=!T;if(T)view()}
+async function view(){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  try{$('#v').innerHTML=await V[tab]();if(tab==='h')drawH();if(tab==='p')drawP()}catch(x){msg(x.message,1)}}
+const V={
+ async d(){const{pub:p,top}=await call('dash'),m=p.monthly;
+  return `<section><div class="g"><div class="k">المتوقع هذا الشهر<b>${f(m.expected)}</b></div><div class="k">المحصّل<b>${f(m.collected)}</b></div><div class="k">الديون<b>${f(p.debts.total)}</b>${p.debts.houses} بيت</div><div class="k">الصندوق العام<b>${f(p.general.balance)}</b></div></div>
+  <p>نسبة التحصيل ${Math.round(m.rate*100)}% — بيوت مشاركة ${p.houses.participating} من ${p.houses.total}</p></section>
+  <section><h3>أكبر المتأخرين</h3>${top.map(h=>`<div class="it"><span><b>${e(h.id)}</b> ${e(h.name)}</span><b>${f(h.debt)}</b><span>${h.phone?`<a class="sb" target="_blank" href="${wa(h)}">💬</a>`:''}<button class="sb" onclick="openHouse('${e(h.id)}')">تفاصيل</button></span></div>`).join('')||'لا متأخرات 🎉'}</section>
+  <section><h3>المشاريع</h3>${p.projects.map(x=>`<div class="it"><span>${e(x.name)}</span><span>${f(x.collected)} / ${f(x.cost)} (${Math.round(x.rate*100)}%)</span></div>`).join('')||'—'}</section>`},
+ async h(){HS=await call('houses');
+  return `<section><input id="q" placeholder="بحث (بيت / اسم / هاتف)" oninput="drawH()"><div id="hl"></div></section>
+  <section><h3>إضافة بيت</h3><form id="fh"><input name="i" placeholder="رقم البيت (مثال A32)" required pattern="[A-Da-d][0-9]{2,3}"><input name="n" placeholder="الاسم"><input name="p" placeholder="الهاتف"><label>شهر بدء الاشتراك (فارغ = لم يسكن بعد)</label><input name="s" type="month"><button>إضافة</button></form></section>`},
+ async t(){const ty=await call('types');
+  const row=x=>`<div class="it"><span><b>${e(x.name)}</b> (${e(x.kind)})${x.active?'':' — مغلق'}<br><small>${f(x.amount)} / بيت${x.kind==='مشروع'?` — ${f(x.collected)} من ${f(x.cost)} — سدّد ${x.paid_houses}`:''}</small></span><button class="sb" onclick="run('toggleType',{id:'${e(x.id)}'})">${x.active?'إغلاق':'فتح'}</button></div>`;
+  return `<section><h3>الاشتراكات والمشاريع</h3>${ty.map(row).join('')}</section>
+  <section><h3>إضافة</h3><form id="ft"><select name="k" onchange="tk(this.value)"><option>شهري</option><option>مشروع</option></select><input name="n" placeholder="الاسم" required><input name="a" type="number" min="1" placeholder="المبلغ لكل بيت (دج)" required>
+  <div id="pf" hidden><input name="c" type="number" min="1" placeholder="التكلفة الإجمالية للمشروع"><label>تاريخ البدء</label><input name="s" type="date"><input name="o" type="number" min="0" placeholder="رصيد افتتاحي محصّل سابقاً (اختياري)"></div><button>إضافة</button></form></section>`},
+ async p(){PS=await call('payments');return `<section><input id="q" placeholder="بحث بالبيت أو الاسم" oninput="drawP()"><table id="pl"></table></section>`},
+ async m(){const{pub:p}=await call('dash');
+  return `<section><h3>مصروف</h3><form id="fx"><input name="i" placeholder="البند" required><input name="a" type="number" min="1" placeholder="المبلغ" required><input name="d" type="date"><button>تسجيل</button></form></section>
+  <section><h3>رسالة أسفل الصفحة العامة</h3><form id="fn"><input name="x" maxlength="300" value="${e(p.notice)}" placeholder="نص الرسالة (فارغ = إخفاؤها)"><button>حفظ الرسالة</button></form></section>`}};
+function drawH(){const q=($('#q').value||'').toLowerCase();
+  $('#hl').innerHTML=HS.filter(h=>(h.id+h.name+h.phone).toLowerCase().includes(q)).map(h=>`<div class="it"><span><b>${e(h.id)}</b> ${e(h.name)||'—'}${h.start?'':' <small>(غير مشارك)</small>'}</span><b>${f(h.debt)}</b><span><button class="sb" onclick="openPay('${e(h.id)}')">دفع</button><button class="sb" onclick="openHouse('${e(h.id)}')">تفاصيل</button>${h.phone&&h.debt?`<a class="sb" target="_blank" href="${wa(h)}">💬</a>`:''}</span></div>`).join('')||'لا نتائج'}
+function drawP(){const q=($('#q').value||'').toLowerCase();
+  $('#pl').innerHTML=PS.filter(p=>(p.house+p.name).toLowerCase().includes(q)).map(p=>`<tr class="${p.off?'off':''}"><td>#${p.ref}</td><td>${e(p.date)}</td><td>${e(p.house)} ${e(p.name)}</td><td>${e(p.type)} ${e(p.month)}</td><td>${f(p.amount)}</td><td>${p.off?'':`<button class="sb" onclick="cancelPay(${p.ref})">إلغاء</button>`}</td></tr>`).join('')}
+function tk(v){const P=v==='مشروع';$('#pf').hidden=!P;$('#pf [name=c]').required=$('#pf [name=s]').required=P}
+async function openHouse(id){cur=id;const d=await call('house',{id}),h=d.h;
+  M(`<h3>${e(h.id)} — ${e(h.name)||'بدون اسم'}</h3><p>الدين الحالي: <b>${f(h.debt)}</b></p>
+  <table>${h.lines.map(l=>`<tr><td>${e(l.t)}</td><td>مستحق ${f(l.due)}</td><td>مدفوع ${f(l.paid)}</td><td><b>${f(l.debt)}</b></td></tr>`).join('')}</table>
+  <button onclick="openPay('${e(h.id)}')">💵 تسجيل دفعة</button>
+  <h3>آخر الدفعات</h3><table>${d.pays.map(p=>`<tr class="${p.off?'off':''}"><td>#${p.ref}</td><td>${e(p.date)}</td><td>${e(p.type)} ${e(p.month)}</td><td>${f(p.amount)}</td><td>${p.off?'':`<button class="sb" onclick="cancelPay(${p.ref},1)">إلغاء</button>`}</td></tr>`).join('')}</table>
+  <h3>تعديل</h3><form id="fe"><input type="hidden" name="i" value="${e(h.id)}"><input name="n" value="${e(h.name)}" placeholder="الاسم"><input name="p" value="${e(h.phone)}" placeholder="الهاتف"><label>شهر بدء الاشتراك (فارغ = غير مشارك)</label><input name="s" type="month" value="${e(h.start)}"><button>حفظ</button></form>`)}
+async function openPay(id){cur=id;const[ty,d]=await Promise.all([call('types'),call('house',{id})]);
+  M(`<h3>دفع — ${e(id)} ${e(d.h.name)}</h3><form id="fp"><input type="hidden" name="h" value="${e(id)}">
+  <select name="t" id="pt" onchange="sp()">${ty.filter(t=>t.active).map(t=>`<option value="${e(t.id)}" data-k="${e(t.kind)}" data-a="${t.amount}">${e(t.name)} (${f(t.amount)})</option>`).join('')}</select>
+  <div id="mo"><label>الشهر الأول</label><input name="m" type="month" value="${new Date().toISOString().slice(0,7)}"><label>عدد الأشهر</label><input name="c" type="number" min="1" max="24" value="1"></div>
+  <input name="a" id="pa" type="number" min="1"><button>تسجيل الدفعة</button></form>`);sp()}
+function sp(){const o=$('#pt').selectedOptions[0];if(!o)return;const pr=o.dataset.k==='مشروع';
+  $('#mo').hidden=pr;$('#pa').required=pr;$('#pa').value=pr?o.dataset.a:'';$('#pa').placeholder=pr?'المبلغ (دج)':'مبلغ مخصص (اختياري، لشهر واحد فقط)'}
+function cancelPay(r,m){if(confirm('إلغاء الوصل #'+r+'؟ يبقى في السجل كملغى.'))run('cancelPay',{ref:r},m?()=>openHouse(cur):null)}
+async function run(action,p,after){$('#ov').hidden=false;
+  try{await call(action,{...p,rid:uid()});msg('✓ تم',0,1);if(after)await after();await view()}catch(x){msg(x.message,1)}finally{$('#ov').hidden=true}}
+const FORMS={
+ fh:['addHouse',d=>({id:d.get('i'),name:d.get('n'),phone:d.get('p'),start:d.get('s')})],
+ fe:['editHouse',d=>({id:d.get('i'),name:d.get('n'),phone:d.get('p'),start:d.get('s')}),()=>openHouse(cur)],
+ fp:['pay',d=>({house:d.get('h'),type:d.get('t'),month:d.get('m'),months:d.get('c'),amount:d.get('a')}),closeM],
+ ft:['addType',d=>({kind:d.get('k'),name:d.get('n'),amount:d.get('a'),cost:d.get('c'),start:d.get('s'),open:d.get('o')})],
+ fx:['addExpense',d=>({item:d.get('i'),amount:d.get('a'),date:d.get('d')})],
+ fn:['setNotice',d=>({text:d.get('x')})]};
+document.addEventListener('submit',async ev=>{
+  const F=ev.target,m=FORMS[F.id];if(!m)return;ev.preventDefault();
   F.dataset.rid=F.dataset.rid||uid();$('#ov').hidden=false;
-  try{await call(action,{...fn(new FormData(F)),rid:F.dataset.rid});delete F.dataset.rid;F.reset();msg('✓ تم الحفظ بنجاح',0,1);await load()}
-  catch(x){msg(x.message,1)}finally{$('#ov').hidden=true}};
-send('#fp','addPayment',d=>({member:d.get('m'),project:d.get('j'),amount:d.get('a'),month:d.get('t')}));
-send('#fm','addMember',d=>({name:d.get('n'),phone:d.get('p'),house:d.get('h')}));
-send('#fx','addExpense',d=>({item:d.get('i'),amount:d.get('a'),date:d.get('d')}));
-send('#fn','setNotice',d=>({text:d.get('x')}));
+  try{await call(m[0],{...m[1](new FormData(F)),rid:F.dataset.rid});delete F.dataset.rid;F.reset();msg('✓ تم الحفظ بنجاح',0,1);if(m[2])await m[2]();await view()}
+  catch(x){msg(x.message,1)}finally{$('#ov').hidden=true}});
 $('#f0').onsubmit=async ev=>{ev.preventDefault();const d=new FormData(ev.target);
   try{T=sessionStorage.t=(await call('login',{username:d.get('u'),password:d.get('p')})).token;msg('');ev.target.reset();show()}catch(x){msg(x.message,1)}};
-$('#out').onclick=()=>{sessionStorage.clear();T='';show()};show();
+$('.tabs').onclick=ev=>{const b=ev.target.closest('button');if(b){tab=b.dataset.t;view()}};
+$('#out').onclick=()=>{sessionStorage.clear();T='';show()};
+show();
 </script>
